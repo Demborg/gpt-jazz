@@ -1,5 +1,10 @@
 const playButton = document.getElementById('playButton');
 const stopButton = document.getElementById('stopButton');
+const canvas = document.getElementById('animationCanvas');
+const ctx = canvas.getContext('2d');
+
+let melodyCircleSize = 0;
+let chordCircleSize = 0;
 
 function createSynth() {
     return new Tone.FMSynth({
@@ -58,18 +63,28 @@ function generateJazzChords() {
     return progression;
 }
 
+function playNoteAnimation(synthType) {
+    if (synthType === 'melody') {
+        melodyCircleSize = 50 + Math.random() * 100;
+    } else if (synthType === 'chord') {
+        chordCircleSize = 50 + Math.random() * 100;
+    }
+}
+
 async function playJazz() {
     const chords = generateJazzChords();
     const melody = generateJazzMelody(chords);
 
     const loop = new Tone.Part((time, { note, duration }) => {
         melodySynth.triggerAttackRelease(note, duration, time);
+        Tone.Draw.schedule(() => playNoteAnimation('melody'), time);
     }, melody).start(0);
 
     const chordLoop = new Tone.Sequence((time, chord) => {
         const duration = ['1m', '2n', '4n'][Math.floor(Math.random() * 3)];
         const delay = Math.random() * 0.5;
         chordSynth.triggerAttackRelease(chord, duration, time + delay);
+        Tone.Draw.schedule(() => playNoteAnimation('chord'), time + delay);
     }, chords).start(0);
 
     Tone.Transport.bpm.value = 120;
@@ -83,6 +98,27 @@ async function playJazz() {
 function stopJazz() {
     Tone.Transport.stop();
 }
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.beginPath();
+    ctx.arc(canvas.width / 4, canvas.height / 2, melodyCircleSize, 0, 2 * Math.PI);
+    ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(3 * canvas.width / 4, canvas.height / 2, chordCircleSize, 0, 2 * Math.PI);
+    ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    ctx.fill();
+
+    melodyCircleSize *= 0.95;
+    chordCircleSize *= 0.95;
+
+    requestAnimationFrame(draw);
+}
+
+draw();
 
 playButton.addEventListener('click', playJazz);
 stopButton.addEventListener('click', stopJazz);
