@@ -10,6 +10,17 @@ let circleX = canvas.width / 2;
 let circleY = canvas.height / 2;
 let circleColor = 'rgba(0, 0, 255, 0.5)';
 
+const scale = ['C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3', 'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'];
+const chords = [['C3', 'E3', 'G3'], ['D3', 'F3', 'A3'], ['E3', 'G3', 'B3'], ['F3', 'A3', 'C4'], ['G3', 'B3', 'D4'], ['A3', 'C4', 'E4'], ['B3', 'D4', 'F4']];
+
+let chordIndex = 0;
+const melodyOctave = 4;
+
+function getRandomNoteFromScale(scale, octave) {
+    const randomIndex = Math.floor(Math.random() * scale.length);
+    return scale[randomIndex];
+}
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -54,9 +65,6 @@ const chordSynth = createSynth();
 // Lower the volume of the chord synthesizer
 chordSynth.volume.value = -12;
 
-const scale = ['C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3', 'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'];
-const chords = [['C3', 'E3', 'G3'], ['D3', 'F3', 'A3'], ['E3', 'G3', 'B3'], ['F3', 'A3', 'C4'], ['G3', 'B3', 'D4'], ['A3', 'C4', 'E4'], ['B3', 'D4', 'F4']];
-
 function generateJazzMelody(chordProgression) {
     const melody = [];
     const totalBars = chordProgression.length * 2;
@@ -93,23 +101,30 @@ function playNoteAnimation(synthType) {
     }
 }
 
+function playMelody(time) {
+    const note = getRandomNoteFromScale(scale, melodyOctave);
+    console.log(note)
+    const duration = '8n';
+    const velocity = Math.random() * 0.5 + 0.5;
+    melodySynth.triggerAttackRelease(note, duration, time, velocity);
+    playNoteAnimation('melody');
+}
+
+function playChords(time) {
+    const currentChord = chords[chordIndex];
+    chordIndex = (chordIndex + 1) % chords.length;
+    const duration = '1m';
+    currentChord.forEach((note) => {
+        chordSynth.triggerAttackRelease(note, duration, time);
+    });
+    playNoteAnimation('chord');
+}
+
 async function playJazz() {
-    const chords = generateJazzChords();
-    const melody = generateJazzMelody(chords);
-
-    const loop = new Tone.Part((time, { note, duration }) => {
-        melodySynth.triggerAttackRelease(note, duration, time);
-        Tone.Draw.schedule(() => playNoteAnimation('melody'), time);
-    }, melody).start(0);
-
-    const chordLoop = new Tone.Sequence((time, chord) => {
-        const duration = ['1m', '2n', '4n'][Math.floor(Math.random() * 3)];
-        const delay = Math.random() * 0.5;
-        chordSynth.triggerAttackRelease(chord, duration, time + delay);
-        Tone.Draw.schedule(() => playNoteAnimation('chord'), time + delay);
-    }, chords).start(0);
-
     Tone.Transport.bpm.value = 120;
+    Tone.Transport.scheduleRepeat(playMelody, '8n');
+    Tone.Transport.scheduleRepeat(playChords, '1m');
+
 
     // Add this line to start Tone.js in response to a user action
     await Tone.start();
