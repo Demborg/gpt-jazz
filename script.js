@@ -1,44 +1,31 @@
 const playButton = document.getElementById('playButton');
 const stopButton = document.getElementById('stopButton');
 
-const melodySynth = new Tone.FMSynth({
-    modulationIndex: 12,
-    envelope: {
-        attack: 0.01,
-        decay: 0.2,
-        sustain: 0.1,
-        release: 1.2
-    },
-    modulation: {
-        type: "square"
-    },
-    modulationEnvelope: {
-        attack: 0.5,
-        decay: 0,
-        sustain: 1,
-        release: 0.5
-    }
-}).toDestination();
+function createSynth() {
+    return new Tone.FMSynth({
+        modulationIndex: 10 + Math.random() * 20,
+        envelope: {
+            attack: 0.01,
+            decay: 0.1 + Math.random() * 0.3,
+            sustain: 0.1 + Math.random() * 0.3,
+            release: 1 + Math.random() * 1.5
+        },
+        modulation: {
+            type: ["sine", "square", "triangle", "sawtooth"][
+                Math.floor(Math.random() * 4)
+            ],
+        },
+        modulationEnvelope: {
+            attack: 0.1 + Math.random() * 0.4,
+            decay: Math.random() * 0.2,
+            sustain: 0.5 + Math.random() * 0.5,
+            release: 0.1 + Math.random() * 0.9
+        },
+    }).toDestination();
+}
 
-const chordSynth = new Tone.FMSynth({
-    modulationIndex: 20,
-    envelope: {
-        attack: 0.01,
-        decay: 0.3,
-        sustain: 0.1,
-        release: 1.5
-    },
-    modulation: {
-        type: "triangle"
-    },
-    modulationEnvelope: {
-        attack: 0.5,
-        decay: 0,
-        sustain: 1,
-        release: 0.5
-    }
-}).toDestination();
-
+const melodySynth = createSynth();
+const chordSynth = createSynth();
 
 // Lower the volume of the chord synthesizer
 chordSynth.volume.value = -12;
