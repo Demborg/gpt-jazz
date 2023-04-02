@@ -9,6 +9,7 @@ let circleSize = 0;
 let circleX = canvas.width / 2;
 let circleY = canvas.height / 2;
 let circleColor = 'rgba(0, 0, 255, 0.5)';
+const circles = [];
 
 const scale = ['C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3', 'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'];
 const chords = [['C3', 'E3', 'G3'], ['D3', 'F3', 'A3'], ['E3', 'G3', 'B3'], ['F3', 'A3', 'C4'], ['G3', 'B3', 'D4'], ['A3', 'C4', 'E4'], ['B3', 'D4', 'F4']];
@@ -24,12 +25,17 @@ function getRandomNoteFromScale(scale, octave) {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.beginPath();
-    ctx.arc(circleX, circleY, circleSize, 0, 2 * Math.PI);
-    ctx.fillStyle = circleColor;
-    ctx.fill();
+    circles.forEach((circle, index) => {
+        ctx.beginPath();
+        ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
+        ctx.fillStyle = circle.color;
+        ctx.fill();
 
-    circleSize *= 0.95;
+        circle.radius -= 0.5;
+        if (circle.radius <= 0) {
+            circles.splice(index, 1);
+        }
+    });
 
     requestAnimationFrame(draw);
 }
@@ -90,24 +96,23 @@ function generateJazzChords() {
     return progression;
 }
 
-function playNoteAnimation(synthType) {
-    if (synthType === 'melody') {
-        circleSize = 50 + Math.random() * 100;
-        circleX = Math.random() * canvas.width;
-        circleY = Math.random() * canvas.height;
-        circleColor = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.5)`;
-    } else if (synthType === 'chord') {
-        circleSize = 50 + Math.random() * 100;
-    }
+function playNoteAnimation(track, frequency) {
+    const circle = {
+        x: (canvas.width / 2) + (Math.sin(frequency / 100) * canvas.width / 4),
+        y: (canvas.height / 2) + (Math.cos(frequency / 100) * canvas.height / 4),
+        radius: track === 'melody' ? 50 : 25,
+        color: track === 'melody' ? `rgba(255, 0, 0, 0.5)` : `rgba(0, 255, 0, 0.5)`,
+    };
+    circles.push(circle);
 }
 
 function playMelody(time) {
     const note = getRandomNoteFromScale(scale, melodyOctave);
-    console.log(note)
-    const duration = '8n';
+    const frequency = Tone.Frequency(note).toFrequency();
+    const duration = '4n';
     const velocity = Math.random() * 0.5 + 0.5;
     melodySynth.triggerAttackRelease(note, duration, time, velocity);
-    playNoteAnimation('melody');
+    playNoteAnimation('melody', frequency);
 }
 
 function playChords(time) {
@@ -115,9 +120,10 @@ function playChords(time) {
     chordIndex = (chordIndex + 1) % chords.length;
     const duration = '1m';
     currentChord.forEach((note) => {
+        const frequency = Tone.Frequency(note).toFrequency();
         chordSynth.triggerAttackRelease(note, duration, time);
+        playNoteAnimation('chord', frequency);
     });
-    playNoteAnimation('chord');
 }
 
 async function playJazz() {
