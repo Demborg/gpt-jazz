@@ -1,7 +1,44 @@
 const playButton = document.getElementById('playButton');
 const stopButton = document.getElementById('stopButton');
-const melodySynth = new Tone.PolySynth().toDestination();
-const chordSynth = new Tone.PolySynth().toDestination();
+
+const melodySynth = new Tone.FMSynth({
+    modulationIndex: 12,
+    envelope: {
+        attack: 0.01,
+        decay: 0.2,
+        sustain: 0.1,
+        release: 1.2
+    },
+    modulation: {
+        type: "square"
+    },
+    modulationEnvelope: {
+        attack: 0.5,
+        decay: 0,
+        sustain: 1,
+        release: 0.5
+    }
+}).toDestination();
+
+const chordSynth = new Tone.FMSynth({
+    modulationIndex: 20,
+    envelope: {
+        attack: 0.01,
+        decay: 0.3,
+        sustain: 0.1,
+        release: 1.5
+    },
+    modulation: {
+        type: "triangle"
+    },
+    modulationEnvelope: {
+        attack: 0.5,
+        decay: 0,
+        sustain: 1,
+        release: 0.5
+    }
+}).toDestination();
+
 
 // Lower the volume of the chord synthesizer
 chordSynth.volume.value = -12;
