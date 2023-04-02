@@ -1,6 +1,8 @@
 const playButton = document.getElementById('playButton');
 const stopButton = document.getElementById('stopButton');
 const canvas = document.getElementById('animationCanvas');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 const ctx = canvas.getContext('2d');
 
 let circleSize = 0;
