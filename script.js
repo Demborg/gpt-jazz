@@ -3,8 +3,25 @@ const stopButton = document.getElementById('stopButton');
 const canvas = document.getElementById('animationCanvas');
 const ctx = canvas.getContext('2d');
 
-let melodyCircleSize = 0;
-let chordCircleSize = 0;
+let circleSize = 0;
+let circleX = canvas.width / 2;
+let circleY = canvas.height / 2;
+let circleColor = 'rgba(0, 0, 255, 0.5)';
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.beginPath();
+    ctx.arc(circleX, circleY, circleSize, 0, 2 * Math.PI);
+    ctx.fillStyle = circleColor;
+    ctx.fill();
+
+    circleSize *= 0.95;
+
+    requestAnimationFrame(draw);
+}
+
+draw();
 
 function createSynth() {
     return new Tone.FMSynth({
@@ -65,9 +82,12 @@ function generateJazzChords() {
 
 function playNoteAnimation(synthType) {
     if (synthType === 'melody') {
-        melodyCircleSize = 50 + Math.random() * 100;
+        circleSize = 50 + Math.random() * 100;
+        circleX = Math.random() * canvas.width;
+        circleY = Math.random() * canvas.height;
+        circleColor = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.5)`;
     } else if (synthType === 'chord') {
-        chordCircleSize = 50 + Math.random() * 100;
+        circleSize = 50 + Math.random() * 100;
     }
 }
 
@@ -98,27 +118,6 @@ async function playJazz() {
 function stopJazz() {
     Tone.Transport.stop();
 }
-
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.beginPath();
-    ctx.arc(canvas.width / 4, canvas.height / 2, melodyCircleSize, 0, 2 * Math.PI);
-    ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(3 * canvas.width / 4, canvas.height / 2, chordCircleSize, 0, 2 * Math.PI);
-    ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-    ctx.fill();
-
-    melodyCircleSize *= 0.95;
-    chordCircleSize *= 0.95;
-
-    requestAnimationFrame(draw);
-}
-
-draw();
 
 playButton.addEventListener('click', playJazz);
 stopButton.addEventListener('click', stopJazz);
