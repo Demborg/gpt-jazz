@@ -172,3 +172,24 @@ button:hover {
     margin-left: 10px;
     cursor: pointer;
 }
+
+@media screen and (max-width: 500px) {
+    #pageTitle {
+        font-size: 1.5em;
+    }
+
+    button,
+    .toggleLabel {
+        font-size: 0.9em;
+        padding: 5px 10px;
+    }
+
+    #buttonContainer {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #infoButton {
+        font-size: 1.5em;
+    }
+}
