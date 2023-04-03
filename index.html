@@ -7,7 +7,10 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1 id="pageTitle">Jazz Generator</h1>
+    <div id="header">
+        <h1 id="pageTitle">Jazz Generator</h1>
+        <button id="infoButton">&#9432;</button>
+    </div>
     <canvas id="animationCanvas"></canvas>
     <div id="buttonContainer">
         <button id="playButton">Play Jazz</button>
@@ -37,6 +40,15 @@
             <span class="toggleText">Bass</span>
         </label>
     </div>
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>About Jazz Generator</h2>
+            <p>Jazz Generator is a fun and interactive music project created by a human and an AI (ChatGPT). Together, we designed a unique jazz experience that allows you to enjoy and explore the world of jazz music.</p>
+            <p>Click on the checkboxes to toggle the individual instruments and press play to start your jazz journey. We hope you enjoy the music as much as we enjoyed creating it!</p>
+        </div>
+    </div>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.30/Tone.js"></script>
     <script src="script.js"></script>

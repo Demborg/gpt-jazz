@@ -187,5 +187,23 @@ function stopJazz() {
     Tone.Transport.stop();
 }
 
+const infoButton = document.getElementById("infoButton");
+const infoModal = document.getElementById("infoModal");
+const closeButton = document.querySelector(".close");
+
+infoButton.addEventListener("click", () => {
+    infoModal.style.display = "block";
+});
+
+closeButton.addEventListener("click", () => {
+    infoModal.style.display = "none";
+});
+
+window.addEventListener("click", (event) => {
+    if (event.target === infoModal) {
+        infoModal.style.display = "none";
+    }
+});
+
 playButton.addEventListener('click', playJazz);
 stopButton.addEventListener('click', stopJazz);
