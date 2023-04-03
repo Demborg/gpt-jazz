@@ -1,6 +1,10 @@
 const playButton = document.getElementById('playButton');
 const stopButton = document.getElementById('stopButton');
 const canvas = document.getElementById('animationCanvas');
+const melodyToggle = document.getElementById('melodyToggle');
+const chordsToggle = document.getElementById('chordsToggle');
+const bassToggle = document.getElementById('bassToggle');
+
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 const ctx = canvas.getContext('2d');
@@ -16,6 +20,18 @@ const chords = [['C3', 'E3', 'G3'], ['D3', 'F3', 'A3'], ['E3', 'G3', 'B3'], ['F3
 
 let chordIndex = 0;
 const melodyOctave = 4;
+
+function updateSchedule() {
+    Tone.Transport.cancel();
+
+    Tone.Transport.scheduleRepeat(playMelody, '8n');
+    Tone.Transport.scheduleRepeat(playChords, '1m');
+    Tone.Transport.scheduleRepeat(playBass, '4n');
+}
+
+melodyToggle.addEventListener('change', updateSchedule);
+chordsToggle.addEventListener('change', updateSchedule);
+bassToggle.addEventListener('change', updateSchedule);
 
 function getRandomNoteFromScale(scale, octave) {
     const randomIndex = Math.floor(Math.random() * scale.length);
@@ -108,6 +124,7 @@ function playNoteAnimation(track, frequency) {
 }
 
 function playMelody(time) {
+    if (!melodyToggle.checked) return;
     const note = getRandomNoteFromScale(scale, melodyOctave);
     const frequency = Tone.Frequency(note).toFrequency();
     const duration = '4n';
@@ -117,6 +134,7 @@ function playMelody(time) {
 }
 
 function playChords(time) {
+    if (!chordsToggle.checked) return;
     const currentChord = chords[chordIndex];
     chordIndex = (chordIndex + 1) % chords.length;
     const duration = '1m';
@@ -141,6 +159,7 @@ const bassPattern = generateBassPattern(chordProgression);
 let bassIndex = 0;
 
 function playBass(time) {
+    if (!bassToggle.checked) return;
     const bassNote = bassPattern[bassIndex];
     bassIndex = (bassIndex + 1) % bassPattern.length;
     const frequency = Tone.Frequency(bassNote).toFrequency();
@@ -152,6 +171,7 @@ function playBass(time) {
 
 async function playJazz() {
     Tone.Transport.bpm.value = 120;
+    updateSchedule();
     Tone.Transport.scheduleRepeat(playMelody, '8n');
     Tone.Transport.scheduleRepeat(playChords, '1m');
     Tone.Transport.scheduleRepeat(playBass, '4n');

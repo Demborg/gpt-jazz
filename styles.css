@@ -28,6 +28,61 @@ button:hover {
     background-color: #666;
 }
 
+.toggleLabel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #444;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1.1em;
+    margin: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.toggleLabel input[type="checkbox"] {
+    display: none;
+}
+
+.toggleLabel span {
+    display: inline-block;
+    height: 20px;
+    margin-left: 10px;
+    position: relative;
+    width: 40px;
+}
+
+.toggleLabel span:before,
+.toggleLabel span:after {
+    content: '';
+    display: block;
+    position: absolute;
+}
+
+.toggleLabel span:before {
+    background-color: #666;
+    border-radius: 20px;
+    height: 20px;
+    width: 40px;
+}
+
+.toggleLabel span:after {
+    background-color: #fff;
+    border-radius: 50%;
+    height: 20px;
+    left: 0;
+    top: 0;
+    transition: left 0.3s;
+    width: 20px;
+}
+
+.toggleLabel input[type="checkbox"]:checked + span:after {
+    left: 20px;
+}
+
+
 #animationCanvas {
     position: absolute;
     top: 0;
@@ -40,6 +95,7 @@ button:hover {
     position: absolute;
     bottom: 10%;
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     justify-content: center;
     width: 100%;
