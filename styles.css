@@ -54,32 +54,42 @@ button:hover {
     width: 40px;
 }
 
-.toggleLabel span:before,
-.toggleLabel span:after {
-    content: '';
-    display: block;
-    position: absolute;
-}
-
-.toggleLabel span:before {
+.toggleLabel .toggle-bg {
     background-color: #666;
     border-radius: 20px;
+    display: inline-block;
     height: 20px;
+    position: absolute;
     width: 40px;
 }
 
-.toggleLabel span:after {
+.toggleLabel .toggle-knob {
     background-color: #fff;
     border-radius: 50%;
+    display: inline-block;
     height: 20px;
     left: 0;
+    position: absolute;
     top: 0;
     transition: left 0.3s;
     width: 20px;
 }
 
-.toggleLabel input[type="checkbox"]:checked + span:after {
+.toggleLabel input[type="checkbox"]:checked + span .toggle-knob {
     left: 20px;
+}
+
+.toggleLabel input[type="checkbox"]:not(:checked) + span .toggle-bg {
+    background-color: #333;
+}
+
+.toggleLabel input[type="checkbox"]:not(:checked) + span .toggle-knob {
+    background-color: #aaa;
+}
+
+.toggleLabel input[type="checkbox"]:not(:checked) ~ .toggleText {
+    color: #888;
+    text-decoration: line-through;
 }
 
 
