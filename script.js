@@ -67,6 +67,7 @@ function createSynth() {
 
 const melodySynth = createSynth();
 const chordSynth = createSynth();
+const bassSynth = createSynth();
 
 // Lower the volume of the chord synthesizer
 chordSynth.volume.value = -12;
@@ -100,8 +101,8 @@ function playNoteAnimation(track, frequency) {
     const circle = {
         x: (canvas.width / 2) + (Math.sin(frequency / 100) * canvas.width / 4),
         y: (canvas.height / 2) + (Math.cos(frequency / 100) * canvas.height / 4),
-        radius: track === 'melody' ? 50 : 25,
-        color: track === 'melody' ? `rgba(255, 0, 0, 0.5)` : `rgba(0, 255, 0, 0.5)`,
+        radius: track === 'melody' ? 50 : (track === 'bass' ? 30 : 25),
+        color: track === 'melody' ? `rgba(255, 0, 0, 0.5)` : (track === 'bass' ? `rgba(0, 0, 255, 0.5)` : `rgba(0, 255, 0, 0.5)`),
     };
     circles.push(circle);
 }
@@ -126,10 +127,34 @@ function playChords(time) {
     });
 }
 
+function generateBassPattern(chordProgression) {
+    const bassPattern = [];
+    chordProgression.forEach((chord) => {
+        const bassNote = chord[0].charAt(0) + (parseInt(chord[0].slice(-1)) - 1);
+        bassPattern.push(bassNote);
+    });
+    return bassPattern;
+}
+
+const chordProgression = generateJazzChords();
+const bassPattern = generateBassPattern(chordProgression);
+let bassIndex = 0;
+
+function playBass(time) {
+    const bassNote = bassPattern[bassIndex];
+    bassIndex = (bassIndex + 1) % bassPattern.length;
+    const frequency = Tone.Frequency(bassNote).toFrequency();
+    const duration = '4n';
+    const velocity = Math.random() * 0.5 + 0.5;
+    bassSynth.triggerAttackRelease(bassNote, duration, time, velocity);
+    playNoteAnimation('bass', frequency);
+}
+
 async function playJazz() {
     Tone.Transport.bpm.value = 120;
     Tone.Transport.scheduleRepeat(playMelody, '8n');
     Tone.Transport.scheduleRepeat(playChords, '1m');
+    Tone.Transport.scheduleRepeat(playBass, '4n');
 
 
     // Add this line to start Tone.js in response to a user action
