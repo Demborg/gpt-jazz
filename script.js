@@ -4,6 +4,7 @@ const canvas = document.getElementById('animationCanvas');
 const melodyToggle = document.getElementById('melodyToggle');
 const chordsToggle = document.getElementById('chordsToggle');
 const bassToggle = document.getElementById('bassToggle');
+const crazyModeToggle = document.getElementById('crazyModeToggle');
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -34,8 +35,12 @@ chordsToggle.addEventListener('change', updateSchedule);
 bassToggle.addEventListener('change', updateSchedule);
 
 function getRandomNoteFromScale(scale, octave) {
-    const randomIndex = Math.floor(Math.random() * scale.length);
-    return scale[randomIndex];
+    if (crazyModeToggle.checked) {
+        return Tone.Frequency(Math.floor(Math.random() * 88) + 21, "midi").toNote();
+    } else {
+        const randomIndex = Math.floor(Math.random() * scale.length);
+        return scale[randomIndex];
+    }
 }
 
 function draw() {
@@ -198,6 +203,15 @@ infoButton.addEventListener("click", () => {
 closeButton.addEventListener("click", () => {
     infoModal.style.display = "none";
 });
+
+crazyModeToggle.addEventListener('change', () => {
+    if (crazyModeToggle.checked) {
+        Tone.Transport.bpm.value = 240;
+    } else {
+        Tone.Transport.bpm.value = 120;
+    }
+});
+
 
 window.addEventListener("click", (event) => {
     if (event.target === infoModal) {
