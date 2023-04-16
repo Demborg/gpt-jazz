@@ -1,5 +1,4 @@
-const playButton = document.getElementById('playButton');
-const stopButton = document.getElementById('stopButton');
+const playPauseButton = document.getElementById('playPauseButton');
 const canvas = document.getElementById('animationCanvas');
 const melodyToggle = document.getElementById('melodyToggle');
 const chordsToggle = document.getElementById('chordsToggle');
@@ -174,23 +173,27 @@ function playBass(time) {
     playNoteAnimation('bass', frequency);
 }
 
-async function playJazz() {
-    Tone.Transport.bpm.value = 120;
-    updateSchedule();
-    Tone.Transport.scheduleRepeat(playMelody, '8n');
-    Tone.Transport.scheduleRepeat(playChords, '1m');
-    Tone.Transport.scheduleRepeat(playBass, '4n');
+let isPlaying = false;
 
+async function toggleJazz() {
+    if (!isPlaying) {
+        Tone.Transport.bpm.value = crazyModeToggle.checked ? 240 : 120;
+        updateSchedule();
+        Tone.Transport.scheduleRepeat(playMelody, '8n');
+        Tone.Transport.scheduleRepeat(playChords, '1m');
+        Tone.Transport.scheduleRepeat(playBass, '4n');
 
-    // Add this line to start Tone.js in response to a user action
-    await Tone.start();
-
-    Tone.Transport.start();
+        await Tone.start();
+        Tone.Transport.start();
+        playPauseButton.textContent = 'Pause';
+        isPlaying = true;
+    } else {
+        Tone.Transport.stop();
+        playPauseButton.textContent = 'Play';
+        isPlaying = false;
+    }
 }
 
-function stopJazz() {
-    Tone.Transport.stop();
-}
 
 const infoButton = document.getElementById("infoButton");
 const infoModal = document.getElementById("infoModal");
@@ -219,5 +222,4 @@ window.addEventListener("click", (event) => {
     }
 });
 
-playButton.addEventListener('click', playJazz);
-stopButton.addEventListener('click', stopJazz);
+playPauseButton.addEventListener('click', toggleJazz);
